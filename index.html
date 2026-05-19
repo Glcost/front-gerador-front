@@ -4,134 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Receitas</title>
-    <!-- Importando o Tailwind CSS para deixar o visual bonito sem criar arquivos .css adicionais -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<!-- Estrutura flexbox para manter o rodapé sempre na parte inferior -->
-<body class="bg-gray-50 min-h-screen font-sans flex flex-col justify-between">
+<body class="bg-stone-50 min-h-screen flex flex-col justify-between text-stone-800">
 
     <div>
-        <!-- Header -->
-        <header class="bg-amber-500 text-white py-6 shadow-md text-center">
-            <h1 class="text-3xl font-bold tracking-wide">🍳 Gerador de Receitas</h1>
-            <p class="text-sm opacity-90 mt-1">Insira os ingredientes e deixe o Chef Gemini cozinhar!</p>
+        <header class="py-12 text-center px-4">
+            <div class="flex justify-center mb-4 text-orange-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
+                    <line x1="6" y1="17" x2="18" y2="17"></line>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-stone-900">Gerador de Receitas</h1>
+            <p class="text-stone-500 mt-2 max-w-md mx-auto">Insira os ingredientes disponíveis e deixe a inteligência artificial preparar o menu perfeito para você.</p>
         </header>
 
-        <main class="max-w-2xl mx-auto p-4 mt-6">
+        <main class="max-w-2xl mx-auto px-4 pb-12 w-full">
             
-            <!-- Formulário de Inredientes -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4">Seus Ingredientes (Mínimo 3)</h2>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                <div class="flex items-center gap-2 mb-6 text-stone-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-orange-500">
+                        <path d="M12 2v20"></path>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <h2 class="text-lg font-semibold">Seus Ingredientes</h2>
+                </div>
                 
                 <form id="recipe-form" onsubmit="gerarReceita(event)">
-                    <!-- Container onde os inputs ficarão -->
                     <div id="inputs-container" class="space-y-3">
-                        <input type="text" placeholder="Ingrediente 1" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        <input type="text" placeholder="Ingrediente 2" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        <input type="text" placeholder="Ingrediente 3" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <input type="text" placeholder="Ingrediente 1" required class="ingrediente-input w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all placeholder-stone-400">
+                        <input type="text" placeholder="Ingrediente 2" required class="ingrediente-input w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all placeholder-stone-400">
+                        <input type="text" placeholder="Ingrediente 3" required class="ingrediente-input w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all placeholder-stone-400">
                     </div>
 
-                    <!-- Botão para adicionar mais inputs -->
-                    <button type="button" onclick="adicionarInput()" class="mt-3 text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1">
-                        ➕ Adicionar outro ingrediente
+                    <button type="button" onclick="adicionarInput()" class="mt-4 text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1.5 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Adicionar ingrediente
                     </button>
 
-                    <!-- Botões de Ação -->
-                    <div class="mt-6 flex gap-4">
-                        <button type="submit" id="btn-enviar" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-4 rounded-md transition duration-200 flex justify-center items-center gap-2">
-                            <span>Gerar receita</span>
-                            <!-- Ícone de Loading (escondido por padrão) -->
-                            <div id="loading-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div class="mt-8 flex gap-3">
+                        <button type="submit" id="btn-enviar" class="flex-1 bg-stone-900 hover:bg-stone-800 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-2 shadow-sm">
+                            <span>Gerar Receita</span>
+                            <div id="loading-spinner" class="hidden w-4 h-4 border-2 border-stone-400 border-t-white rounded-full animate-spin"></div>
                         </button>
                         
-                        <button type="button" onclick="reiniciarFormulario()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-md transition duration-200">
-                            Reiniciar
+                        <button type="button" onclick="reiniciarFormulario()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium py-3 px-6 rounded-xl transition-colors duration-200">
+                            Limpar
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Container de Erro (escondido por padrão) -->
-            <div id="error-message" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm"></div>
+            <div id="error-message" class="hidden mt-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <span id="error-text"></span>
+            </div>
 
-            <!-- Seção do Resultado da Receita (escondida por padrão) -->
-            <div id="resultado-container" class="hidden mt-6 bg-white p-6 rounded-lg shadow-md border-t-4 border-amber-500 mb-12">
-                <h2 id="rec-titulo" class="text-2xl font-bold text-gray-800 mb-2"></h2>
+            <div id="resultado-container" class="hidden mt-8 bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                <h2 id="rec-titulo" class="text-2xl font-bold text-stone-900 mb-6 leading-tight"></h2>
                 
-                <div class="flex gap-4 text-sm text-gray-600 mb-6 bg-amber-50 p-3 rounded-md">
-                    <p>⏱️ <strong>Tempo:</strong> <span id="rec-tempo"></span></p>
-                    <p>🍽️ <strong>Rendimento:</strong> <span id="rec-porcoes"></span></p>
+                <div class="flex flex-wrap gap-3 text-sm text-stone-600 mb-8">
+                    <div class="flex items-center gap-2 bg-stone-50 border border-stone-100 px-3 py-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-orange-500"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span id="rec-tempo" class="font-medium"></span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-stone-50 border border-stone-100 px-3 py-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-orange-500"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span id="rec-porcoes" class="font-medium"></span>
+                    </div>
                 </div>
 
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-gray-700 border-b pb-1 mb-3">📋 Ingredientes necessários</h3>
-                    <ul id="rec-ingredientes" class="list-disc pl-5 space-y-1 text-gray-600"></ul>
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-stone-400"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                        Ingredientes Necessários
+                    </h3>
+                    <ul id="rec-ingredientes" class="space-y-2 text-stone-600 ml-1 border-l-2 border-stone-100 pl-4"></ul>
                 </div>
 
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-700 border-b pb-1 mb-3">👨‍🍳 Modo de Preparo</h3>
-                    <ol id="rec-preparo" class="list-decimal pl-5 space-y-3 text-gray-600"></ol>
+                    <h3 class="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-stone-400"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        Modo de Preparo
+                    </h3>
+                    <ol id="rec-preparo" class="space-y-4 text-stone-600 list-decimal pl-5 marker:text-stone-400 marker:font-medium"></ol>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <!-- Rodapé (Footer) -->
-    <footer class="bg-amber-500 text-white py-6 mt-12 shadow-inner text-center text-sm">
-        <div class="max-w-2xl mx-auto px-4 space-y-1.5">
-            <p class="font-semibold">© Gerador de Receitas com IA - Google Gemini</p>
-            <p class="text-xs opacity-85 leading-relaxed">
-                ⚠️ O Gemini é uma IA e pode cometer erros. Valide a receita antes de tentá-la executar.
+    <footer class="py-8 text-center text-sm border-t border-stone-200 mt-auto bg-stone-100">
+        <div class="max-w-2xl mx-auto px-4 space-y-2">
+            <p class="font-medium text-stone-700">Gerador de Receitas com IA</p>
+            <p class="text-xs text-stone-500 leading-relaxed max-w-sm mx-auto">
+                Desenvolvido com o modelo Google Gemini. Sempre valide os passos e ingredientes antes de cozinhar.
             </p>
         </div>
     </footer>
 
-    <!-- JavaScript Lógico -->
     <script>
-        // ⚠️ ATENÇÃO ALUNOS: Substituam a URL abaixo pela URL do seu projeto implantado na Vercel!
-        const API_URL = "https://api-receitas-two.vercel.app/"; 
+        const API_URL = "https://geradorai-backend-w4rd.vercel.app"; 
 
         const containerInputs = document.getElementById('inputs-container');
         const spinner = document.getElementById('loading-spinner');
         const btnEnviar = document.getElementById('btn-enviar');
         const resultadoContainer = document.getElementById('resultado-container');
         const errorContainer = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
 
-        // Função para adicionar dinamicamente novos campos de ingredientes com botão de exclusão
         function adicionarInput() {
-            // Conta quantos inputs já existem no container para definir o placeholder correto
             const totalInputs = containerInputs.querySelectorAll('.ingrediente-input').length + 1;
             
-            // Cria a div que vai envelopar o input e o botão de deletar
             const wrapper = document.createElement('div');
-            wrapper.className = 'flex gap-2 items-center animate-fade-in';
+            wrapper.className = 'flex gap-2 items-center';
             
-            // Cria o input de texto
             const novoInput = document.createElement('input');
             novoInput.type = 'text';
             novoInput.placeholder = `Ingrediente ${totalInputs}`;
-            novoInput.className = 'ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none';
+            novoInput.className = 'ingrediente-input w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all placeholder-stone-400';
             
-            // Cria o botão de excluir (X)
             const btnDeletar = document.createElement('button');
             btnDeletar.type = 'button';
-            btnDeletar.innerHTML = '✕';
-            btnDeletar.className = 'bg-red-100 hover:bg-red-200 text-red-600 font-bold p-2.5 rounded-md transition duration-150 h-full px-4';
+            // Ícone de X (SVG) minimalista
+            btnDeletar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+            btnDeletar.className = 'text-stone-400 hover:text-red-500 hover:bg-red-50 p-3 rounded-xl transition-colors duration-200 flex-shrink-0';
             
-            // Define o evento de clique para remover esta div específica
             btnDeletar.onclick = function() {
                 wrapper.remove();
                 reorganizarPlaceholders();
             };
             
-            // Junta os elementos criados
             wrapper.appendChild(novoInput);
             wrapper.appendChild(btnDeletar);
             containerInputs.appendChild(wrapper);
         }
 
-        // Função auxiliar para atualizar a numeração dos placeholders após uma exclusão
         function reorganizarPlaceholders() {
             const inputs = containerInputs.querySelectorAll('.ingrediente-input');
             inputs.forEach((input, index) => {
@@ -139,7 +152,6 @@
             });
         }
 
-        // Função principal que consome a API do Backend
         async function gerarReceita(event) {
             event.preventDefault(); 
             
@@ -153,14 +165,12 @@
             
             spinner.classList.remove('hidden');
             btnEnviar.disabled = true;
-            btnEnviar.classList.add('opacity-75');
+            btnEnviar.classList.add('opacity-80', 'cursor-not-allowed');
 
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ingredientes: listaIngredientes })
                 });
 
@@ -173,15 +183,14 @@
                 }
 
             } catch (error) {
-                mostrarErro("Não foi possível conectar à API. Verifique se o servidor está rodando ou se a URL da Vercel está correta.");
+                mostrarErro("Não foi possível conectar à API. Verifique a URL do seu backend.");
             } finally {
                 spinner.classList.add('hidden');
                 btnEnviar.disabled = false;
-                btnEnviar.classList.remove('opacity-75');
+                btnEnviar.classList.remove('opacity-80', 'cursor-not-allowed');
             }
         }
 
-        // Função para injetar os dados do JSON recebido no HTML
         function exibirReceita(receita) {
             document.getElementById('rec-titulo').innerText = receita.nome_da_receita;
             document.getElementById('rec-tempo').innerText = receita.tempo_de_preparo;
@@ -192,6 +201,7 @@
             receita.ingredientes.forEach(ing => {
                 const li = document.createElement('li');
                 li.innerText = ing;
+                li.className = 'relative before:content-[""] before:absolute before:w-1.5 before:h-1.5 before:bg-stone-300 before:rounded-full before:-left-4 before:top-2.5';
                 ulIngredientes.appendChild(li);
             });
 
@@ -200,24 +210,24 @@
             receita.modo_de_preparo.forEach(passo => {
                 const li = document.createElement('li');
                 li.innerText = passo;
+                li.className = 'pl-2';
                 olPreparo.appendChild(li);
             });
 
             resultadoContainer.classList.remove('hidden');
-            resultadoContainer.scrollIntoView({ behavior: 'smooth' });
+            resultadoContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function mostrarErro(mensagem) {
-            errorContainer.innerText = mensagem;
+            errorText.innerText = mensagem;
             errorContainer.classList.remove('hidden');
         }
 
-        // Função do botão Reiniciar
         function reiniciarFormulario() {
             containerInputs.innerHTML = `
-                <input type="text" placeholder="Ingrediente 1" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                <input type="text" placeholder="Ingrediente 2" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                <input type="text" placeholder="Ingrediente 3" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                <input type="text" placeholder="Ingrediente 1" required class="ingrediente-input w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all placeholder-stone-400">
+                <input type="text" placeholder="Ingrediente 2" required class="ingrediente-input w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all placeholder-stone-400">
+                <input type="text" placeholder="Ingrediente 3" required class="ingrediente-input w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all placeholder-stone-400">
             `;
             resultadoContainer.classList.add('hidden');
             errorContainer.classList.add('hidden');
