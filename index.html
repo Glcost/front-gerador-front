@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Receitas</title>
+    <!-- Importando o Tailwind CSS para deixar o visual bonito sem criar arquivos .css adicionais -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<!-- Estrutura flexbox para manter o rodapé sempre na parte inferior -->
+<body class="bg-gray-50 min-h-screen font-sans flex flex-col justify-between">
+
+    <div>
+        <!-- Header -->
+        <header class="bg-amber-500 text-white py-6 shadow-md text-center">
+            <h1 class="text-3xl font-bold tracking-wide">🍳 Gerador de Receitas</h1>
+            <p class="text-sm opacity-90 mt-1">Insira os ingredientes e deixe o Chef Gemini cozinhar!</p>
+        </header>
+
+        <main class="max-w-2xl mx-auto p-4 mt-6">
+            
+            <!-- Formulário de Inredientes -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Seus Ingredientes (Mínimo 3)</h2>
+                
+                <form id="recipe-form" onsubmit="gerarReceita(event)">
+                    <!-- Container onde os inputs ficarão -->
+                    <div id="inputs-container" class="space-y-3">
+                        <input type="text" placeholder="Ingrediente 1" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <input type="text" placeholder="Ingrediente 2" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <input type="text" placeholder="Ingrediente 3" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+
+                    <!-- Botão para adicionar mais inputs -->
+                    <button type="button" onclick="adicionarInput()" class="mt-3 text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1">
+                        ➕ Adicionar outro ingrediente
+                    </button>
+
+                    <!-- Botões de Ação -->
+                    <div class="mt-6 flex gap-4">
+                        <button type="submit" id="btn-enviar" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-4 rounded-md transition duration-200 flex justify-center items-center gap-2">
+                            <span>Gerar receita</span>
+                            <!-- Ícone de Loading (escondido por padrão) -->
+                            <div id="loading-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        </button>
+                        
+                        <button type="button" onclick="reiniciarFormulario()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-md transition duration-200">
+                            Reiniciar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Container de Erro (escondido por padrão) -->
+            <div id="error-message" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm"></div>
+
+            <!-- Seção do Resultado da Receita (escondida por padrão) -->
+            <div id="resultado-container" class="hidden mt-6 bg-white p-6 rounded-lg shadow-md border-t-4 border-amber-500 mb-12">
+                <h2 id="rec-titulo" class="text-2xl font-bold text-gray-800 mb-2"></h2>
+                
+                <div class="flex gap-4 text-sm text-gray-600 mb-6 bg-amber-50 p-3 rounded-md">
+                    <p>⏱️ <strong>Tempo:</strong> <span id="rec-tempo"></span></p>
+                    <p>🍽️ <strong>Rendimento:</strong> <span id="rec-porcoes"></span></p>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-700 border-b pb-1 mb-3">📋 Ingredientes necessários</h3>
+                    <ul id="rec-ingredientes" class="list-disc pl-5 space-y-1 text-gray-600"></ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 border-b pb-1 mb-3">👨‍🍳 Modo de Preparo</h3>
+                    <ol id="rec-preparo" class="list-decimal pl-5 space-y-3 text-gray-600"></ol>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Rodapé (Footer) -->
+    <footer class="bg-amber-500 text-white py-6 mt-12 shadow-inner text-center text-sm">
+        <div class="max-w-2xl mx-auto px-4 space-y-1.5">
+            <p class="font-semibold">© Gerador de Receitas com IA - Google Gemini</p>
+            <p class="text-xs opacity-85 leading-relaxed">
+                ⚠️ O Gemini é uma IA e pode cometer erros. Valide a receita antes de tentá-la executar.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Lógico -->
+    <script>
+        // ⚠️ ATENÇÃO ALUNOS: Substituam a URL abaixo pela URL do seu projeto implantado na Vercel!
+        const API_URL = "http://127.0.0.1:5000/generate"; 
+
+        const containerInputs = document.getElementById('inputs-container');
+        const spinner = document.getElementById('loading-spinner');
+        const btnEnviar = document.getElementById('btn-enviar');
+        const resultadoContainer = document.getElementById('resultado-container');
+        const errorContainer = document.getElementById('error-message');
+
+        // Função para adicionar dinamicamente novos campos de ingredientes com botão de exclusão
+        function adicionarInput() {
+            // Conta quantos inputs já existem no container para definir o placeholder correto
+            const totalInputs = containerInputs.querySelectorAll('.ingrediente-input').length + 1;
+            
+            // Cria a div que vai envelopar o input e o botão de deletar
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-2 items-center animate-fade-in';
+            
+            // Cria o input de texto
+            const novoInput = document.createElement('input');
+            novoInput.type = 'text';
+            novoInput.placeholder = `Ingrediente ${totalInputs}`;
+            novoInput.className = 'ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none';
+            
+            // Cria o botão de excluir (X)
+            const btnDeletar = document.createElement('button');
+            btnDeletar.type = 'button';
+            btnDeletar.innerHTML = '✕';
+            btnDeletar.className = 'bg-red-100 hover:bg-red-200 text-red-600 font-bold p-2.5 rounded-md transition duration-150 h-full px-4';
+            
+            // Define o evento de clique para remover esta div específica
+            btnDeletar.onclick = function() {
+                wrapper.remove();
+                reorganizarPlaceholders();
+            };
+            
+            // Junta os elementos criados
+            wrapper.appendChild(novoInput);
+            wrapper.appendChild(btnDeletar);
+            containerInputs.appendChild(wrapper);
+        }
+
+        // Função auxiliar para atualizar a numeração dos placeholders após uma exclusão
+        function reorganizarPlaceholders() {
+            const inputs = containerInputs.querySelectorAll('.ingrediente-input');
+            inputs.forEach((input, index) => {
+                input.placeholder = `Ingrediente ${index + 1}`;
+            });
+        }
+
+        // Função principal que consome a API do Backend
+        async function gerarReceita(event) {
+            event.preventDefault(); 
+            
+            const inputs = document.querySelectorAll('.ingrediente-input');
+            const listaIngredientes = Array.from(inputs)
+                                           .map(i => i.value.trim())
+                                           .filter(valor => valor !== "");
+
+            errorContainer.classList.add('hidden');
+            resultadoContainer.classList.add('hidden');
+            
+            spinner.classList.remove('hidden');
+            btnEnviar.disabled = true;
+            btnEnviar.classList.add('opacity-75');
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ingredientes: listaIngredientes })
+                });
+
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    exibirReceita(data.dados_receita);
+                } else {
+                    mostrarErro(data.message || "Ocorreu um erro ao processar a requisição.");
+                }
+
+            } catch (error) {
+                mostrarErro("Não foi possível conectar à API. Verifique se o servidor está rodando ou se a URL da Vercel está correta.");
+            } finally {
+                spinner.classList.add('hidden');
+                btnEnviar.disabled = false;
+                btnEnviar.classList.remove('opacity-75');
+            }
+        }
+
+        // Função para injetar os dados do JSON recebido no HTML
+        function exibirReceita(receita) {
+            document.getElementById('rec-titulo').innerText = receita.nome_da_receita;
+            document.getElementById('rec-tempo').innerText = receita.tempo_de_preparo;
+            document.getElementById('rec-porcoes').innerText = receita.porcoes;
+
+            const ulIngredientes = document.getElementById('rec-ingredientes');
+            ulIngredientes.innerHTML = "";
+            receita.ingredientes.forEach(ing => {
+                const li = document.createElement('li');
+                li.innerText = ing;
+                ulIngredientes.appendChild(li);
+            });
+
+            const olPreparo = document.getElementById('rec-preparo');
+            olPreparo.innerHTML = "";
+            receita.modo_de_preparo.forEach(passo => {
+                const li = document.createElement('li');
+                li.innerText = passo;
+                olPreparo.appendChild(li);
+            });
+
+            resultadoContainer.classList.remove('hidden');
+            resultadoContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function mostrarErro(mensagem) {
+            errorContainer.innerText = mensagem;
+            errorContainer.classList.remove('hidden');
+        }
+
+        // Função do botão Reiniciar
+        function reiniciarFormulario() {
+            containerInputs.innerHTML = `
+                <input type="text" placeholder="Ingrediente 1" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                <input type="text" placeholder="Ingrediente 2" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                <input type="text" placeholder="Ingrediente 3" required class="ingrediente-input w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none">
+            `;
+            resultadoContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
