@@ -15,7 +15,7 @@
 // 1. CONFIGURAÇÕES E ESTADOS GLOBAIS
 // =========================================================================
 
-const API_URL = "https://geradorai-backend-8zgn.vercel.app/generate";
+const API_URL = "https://geradorai-backend-nu.vercel.app/generate";
 
 /**
  * Base de dados para sugestões inteligentes do autocomplete de Competências.
