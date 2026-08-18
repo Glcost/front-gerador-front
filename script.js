@@ -12,7 +12,7 @@
  */
 
 // =========================================================================
-// 1. CONFIGURAÇÕES E ESTADOS GLOBAIS
+// 1. CONFIGURAÇÕES E ESTADOS GLOBAIS4
 // =========================================================================
 
 const API_URL = "https://geradorai-backend-nu.vercel.app/generate";
